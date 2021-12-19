@@ -5,6 +5,7 @@ import { ethers } from 'ethers';
 
 import SelectCharacter from './Components/SelectCharacter';
 import Arena from './Components/Arena';
+import LoadingIndicator from './Components/LoadingIndicator';
 
 // Constants
 import { CONTRACT_ADDRESS, transformCharacterData } from './constants';
@@ -19,6 +20,7 @@ const App = () => {
   // Actions
   const [currentAccount, setCurrentAccount] = useState(null);
   const [characterNFT, setCharacterNFT] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const checkIfWalletIsConnected = async () => {
     try {
@@ -26,6 +28,7 @@ const App = () => {
 
       if (!ethereum) {
         console.log('Make sure you have MetaMask!');
+        setIsLoading(false);
         return;
       } else {
         console.log('We have the ethereum object', ethereum);
@@ -49,11 +52,13 @@ const App = () => {
     } catch (error) {
       console.log(error);
     }
+    setIsLoading(false);
   };
   const renderContent = () => {
-    /*
-    * Scenario #1
-    */
+    if (isLoading) {
+      return <LoadingIndicator />;
+    }
+
     if (!currentAccount) {
       return (
         <div className="connect-wallet-container">
@@ -69,9 +74,6 @@ const App = () => {
           </button>
         </div>
       );
-      /*
-      * Scenario #2
-      */
     } else if (currentAccount && !characterNFT) {
       return <SelectCharacter setCharacterNFT={setCharacterNFT} />;
     } else if (currentAccount && characterNFT) {
@@ -108,9 +110,11 @@ const App = () => {
    * This runs our function when the page loads.
    */
   useEffect(() => {
+    setIsLoading(true);
     checkIfWalletIsConnected();
     checkNetwork();
   }, []);
+
   useEffect(() => {
     /*
     * The function we will call that interacts with out smart contract
@@ -133,6 +137,7 @@ const App = () => {
       } else {
         console.log('No character NFT found');
       }
+      setIsLoading(false);
     };
 
     /*
