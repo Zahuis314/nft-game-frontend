@@ -4,6 +4,7 @@ import './App.css';
 import { ethers } from 'ethers';
 
 import SelectCharacter from './Components/SelectCharacter';
+import Arena from './Components/Arena';
 
 // Constants
 import { CONTRACT_ADDRESS, transformCharacterData } from './constants';
@@ -73,6 +74,8 @@ const App = () => {
       */
     } else if (currentAccount && !characterNFT) {
       return <SelectCharacter setCharacterNFT={setCharacterNFT} />;
+    } else if (currentAccount && characterNFT) {
+      return <Arena characterNFT={characterNFT} setCharacterNFT={setCharacterNFT} />;
     }
   };
 
